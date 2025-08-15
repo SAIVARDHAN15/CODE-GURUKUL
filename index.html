@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Skill Check — SoftPledge × Code Gurukul</title>
+<title>Skill Check — SoftPledge × Code Gurukul Academy</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg1:#0f172a; --bg2:#1e293b;                      /* background gradient */
-    --accent:#e11d48; --accent2:#8b5cf6; --accent3:#06b6d4; /* brand pops */
+    --bg1:#0f172a; --bg2:#1e293b;
+    --accent:#e11d48; --accent2:#8b5cf6; --accent3:#06b6d4;
     --card:#ffffff; --ink:#0f172a; --muted:#64748b;
     --ok:#10b981; --mid:#f59e0b; --bad:#ef4444;
     --shadow:0 22px 48px rgba(2,6,23,.35);
@@ -24,7 +24,6 @@
       radial-gradient(900px 480px at -10% -10%, rgba(139,92,246,.25), transparent 60%),
       radial-gradient(900px 480px at 110% 0%, rgba(6,182,212,.20), transparent 60%),
       linear-gradient(135deg,var(--bg1),var(--bg2));
-    transition: background var(--transition-duration) var(--transition-easing);
   }
   .wrap{ width:min(940px,92vw); padding:20px; }
   .brand{
@@ -40,7 +39,6 @@
 
   .card{
     background:var(--card); border-radius:22px; box-shadow:var(--shadow); overflow:hidden;
-    transition: transform var(--transition-duration) var(--transition-easing), opacity var(--transition-duration) var(--transition-easing);
   }
 
   /* Hero / progress */
@@ -66,8 +64,6 @@
     transition:transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, border-color 0.2s;
   }
   .opt:hover{ transform:translateY(-2px); box-shadow:0 12px 24px rgba(2,6,23,.08); border-color: var(--accent3); }
-  .opt strong{ font-weight:700 }
-  .opt .points{ color: var(--muted); font-size: 0.9rem; }
   .opt.selected{ border-color:#bfdbfe; box-shadow:inset 0 0 0 2px rgba(59,130,246,.15); background-color: #f0f9ff; transform: scale(1.02); }
 
   /* Nav */
@@ -84,37 +80,82 @@
   .primary:hover{ transform:translateY(-2px); box-shadow:0 14px 28px rgba(37,99,235,.38)}
   .ghost{ background:#f3f4f6; color:#111827 }
   .ghost:hover{ background:#e5e7eb }
-  .hint{ color:var(--muted); font-size:.92rem }
 
   /* Result */
-  .result{ padding:35px 30px 40px; display:none; text-align:center; opacity: 0; transform: translateY(20px); transition: opacity 0.4s ease-out, transform 0.4s ease-out; }
+  .result{ padding:25px 30px 30px; display:none; text-align:center; opacity: 0; transform: translateY(20px); transition: opacity 0.4s ease-out, transform 0.4s ease-out; }
   .result.active { opacity: 1; transform: translateY(0); }
-  .scoreBig{ font-size:4rem; font-weight:800; letter-spacing:-.02em; margin:8px 0 4px; color: var(--accent); }
+  .result-layout{ display: flex; align-items: center; justify-content: center; gap: 30px; flex-wrap: wrap; }
+  .result-summary { flex: 1; min-width: 250px; text-align: left; }
+  .scoreBig{ font-size:4rem; font-weight:800; letter-spacing:-.02em; color: var(--accent); margin-bottom: 0; }
   .badge{ display:inline-block; padding:10px 16px; border-radius:999px; font-weight:800; color:#fff; font-size:1rem }
   .good{ background:var(--ok) } .mid{ background:var(--mid) } .bad{ background:var(--bad) }
   .summary{ color:var(--muted); margin:8px 0 18px; font-size: 1.1rem; }
+  .row{ display:flex; gap:12px; margin-top:20px }
+
+  /* Skill Meter (Vertical Progress Bar) */
+  .skill-meter-container { flex-shrink: 0; }
+  .skill-meter {
+    position: relative;
+    width: 60px;
+    height: 220px;
+    background-color: #e9ecef;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 3px solid #dee2e6;
+  }
+  .skill-meter-fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0; /* Set by JS */
+    background: linear-gradient(0deg, var(--accent), var(--mid), var(--ok));
+    transition: height 1.5s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .skill-meter-tier {
+    position: absolute;
+    left: 105%;
+    width: 120px;
+    text-align: left;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--muted);
+    border-top: 2px dashed #ced4da;
+    padding-top: 2px;
+  }
+  .tier-1 { bottom: 0; }
+  .tier-2 { bottom: 60%; }
+  .tier-3 { bottom: 80%; }
+  .tier-3 strong { color: var(--ok); }
   
   /* Promotion */
   .promotion{ padding:35px 30px 40px; display:none; text-align:center; opacity: 0; transform: translateY(20px); transition: opacity 0.4s ease-out, transform 0.4s ease-out; }
   .promotion.active { opacity: 1; transform: translateY(0); }
-  .promotion h2{ font-size:2.2rem; font-weight:700; margin-bottom:15px; color: var(--accent2); }
+  .promotion-title {
+    font-size: 1.5rem;
+    color: var(--muted);
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+  .academy-name {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--accent2);
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
   .promotion p{ font-size:1.1rem; color: var(--muted); margin-bottom: 20px; line-height: 1.7; max-width: 600px; margin-left: auto; margin-right: auto; }
   .skills-list {
-    text-align: left;
-    max-width: 400px;
-    margin: 20px auto;
-    font-size: 1.1rem;
-    color: var(--ink);
+    text-align: left; max-width: 400px; margin: 20px auto;
+    font-size: 1.1rem; color: var(--ink);
   }
-  .skills-list strong {
-    color: var(--accent);
-  }
+  .skills-list strong { color: var(--accent); }
   .contact-details{ margin-top: 25px; }
   .contact-details p{ font-size: 1.3rem; font-weight: 600; color: var(--ink); }
   .contact-details a{ color: var(--accent); text-decoration: none; }
   .contact-details a:hover{ text-decoration: underline; }
-
-  .row{ display:flex; justify-content:center; gap:12px; margin-top:15px }
 
   @keyframes pulse {
     0% { transform: scale(1); }
@@ -122,36 +163,25 @@
   }
 
   @media (max-width:640px){
-    .stage{ min-height:280px; padding: 20px; gap: 18px; }
-    .question{ font-size:1.2rem }
-    .opt{ padding: 14px 18px; font-size: 1rem; }
-    .nav{ padding: 0 20px 20px; }
-    .btn{ padding: 12px 18px; font-size: 1rem; }
-    .result{ padding: 25px 20px 30px; }
-    .scoreBig{ font-size: 3.5rem; }
-    .summary{ font-size: 1rem; }
-    .promotion{ padding: 25px 20px 30px; }
-    .promotion h2{ font-size: 2rem; }
-    .promotion p{ font-size: 1rem; }
-    .skills-list { font-size: 1rem; }
-    .contact-details p{ font-size: 1.2rem; }
+    .result-layout { flex-direction: column; gap: 25px; }
+    .result-summary { text-align: center; }
+    .skill-meter-tier { display: none; } /* Hide text labels on mobile for cleaner look */
+    .row { justify-content: center; }
   }
 </style>
 </head>
 <body>
   <div class="wrap">
-    <div class="brand"><div class="logo" aria-hidden="true"></div><h1>SoftPledge × Code Gurukul</h1></div>
+    <div class="brand"><div class="logo" aria-hidden="true"></div><h1>SoftPledge × Code Gurukul Academy</h1></div>
 
     <div class="card" id="app">
-
       <div class="hero">
-        <h2 id="heroTitle">Quick Skill Check (100 pts)</h2>
-        <p id="heroSub">Answer 10 short questions. Clean. Fast. Honest.</p>
+        <h2 id="heroTitle">Quick Skill Check</h2>
+        <p id="heroSub">Answer 10 short questions to see where you stand.</p>
         <div class="progress"><div class="bar" id="bar"></div></div>
       </div>
 
-      <div class="stage" id="stage">
-        </div>
+      <div class="stage" id="stage"></div>
 
       <div class="nav" id="nav">
         <button class="btn ghost" id="backBtn" disabled>Back</button>
@@ -160,27 +190,39 @@
       </div>
 
       <div class="result" id="result">
-        <div class="qnum" style="justify-content:center"><span class="dot"></span><span>Assessment Summary</span></div>
-        <div class="scoreBig" id="finalScore">0 / 100</div>
-        <div id="tier"></div>
-        <p class="summary" id="summary">Your summary appears here.</p>
-        <button class="btn primary" id="viewPromoBtn">Start Improving Your Skills</button>
-        <div class="row">
-          <button class="btn ghost" id="restartBtn">Restart</button>
+        <div class="result-layout">
+          <div class="result-summary">
+            <div class="qnum" style="justify-content:center"><span class="dot"></span><span>Assessment Summary</span></div>
+            <div class="scoreBig" id="finalScore">0</div>
+            <div id="tier"></div>
+            <p class="summary" id="summary">Your summary appears here.</p>
+            <div class="row">
+              <button class="btn ghost" id="restartBtn">Restart</button>
+              <button class="btn primary" id="viewPromoBtn">Improve Your Skills</button>
+            </div>
+          </div>
+          <div class="skill-meter-container">
+            <div class="skill-meter">
+              <div class="skill-meter-fill" id="skillMeterFill"></div>
+              <div class="skill-meter-tier tier-1">Foundation</div>
+              <div class="skill-meter-tier tier-2">Getting There</div>
+              <div class="skill-meter-tier tier-3"><strong>Hire-Ready</strong></div>
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="promotion" id="promotion">
-        <h2>The Future is Built on Skill</h2>
-        <p>In today's fast-paced digital world, practical skills are your most valuable asset. Companies are hiring creators and problem-solvers who can build, innovate, and deliver results from day one.</p>
-        <p>At Code Gurukul, we focus on the high-demand technologies that power the modern world:</p>
+        <p class="promotion-title">Unlock Your Potential at</p>
+        <h2 class="academy-name">Code Gurukul Academy</h2>
+        <p>In today's digital world, practical skills are your most valuable asset. We focus on the high-demand technologies that power modern industry and turn learners into builders.</p>
         <div class="skills-list">
           - <strong>Full-Stack Development</strong> (HTML, CSS, JS, React, Node.js)<br>
           - <strong>AI & Machine Learning</strong> with Python<br>
           - <strong>Data Structures & Algorithms</strong> for problem-solving<br>
           - <strong>SQL & Database Management</strong><br>
         </div>
-        <p>Our hands-on, project-based training ensures you don't just learn—you build. You'll graduate with a strong portfolio, the confidence to excel in technical interviews, and the skills to launch a high-growth career.</p>
+        <p>Our project-based training ensures you build a strong portfolio and gain the confidence to excel in technical interviews and launch a high-growth career.</p>
         
         <div class="contact-details">
           <p>📞 Take the next step: <a href="tel:+919502654607">+91 9502654607</a></p>
@@ -228,12 +270,10 @@
     ]}
   ];
 
-  // ------------- State -------------
+  // ------------- State and DOM Elements -------------
   let idx = 0;
   const answers = Array(QUIZ.length).fill(null);
   let currentStage = 'quiz';
-
-  // DOM Elements
   const stage = document.getElementById('stage');
   const bar = document.getElementById('bar');
   const backBtn = document.getElementById('backBtn');
@@ -247,7 +287,7 @@
   const viewPromoBtn = document.getElementById('viewPromoBtn');
   const promotion = document.getElementById('promotion');
   const restartBtnFromPromo = document.getElementById('restartBtnFromPromo');
-  const hintText = document.getElementById('hintText');
+  const skillMeterFill = document.getElementById('skillMeterFill');
 
   // ------------- Renderers -------------
   function renderQuestion(i){
@@ -257,10 +297,7 @@
       <div class="question fade-enter">${item.q}</div>
       <div class="options fade-enter">
         ${item.opts.map((o,oi)=>`
-          <div class="opt" data-oi="${oi}">
-            <strong>${o.label}</strong>
-            <span class="points">${o.pts} pts</span>
-          </div>
+          <div class="opt" data-oi="${oi}"><strong>${o.label}</strong></div>
         `).join('')}
       </div>
     `;
@@ -269,14 +306,12 @@
 
     const chosen = answers[i];
     if (chosen !== null){
-      stage.querySelectorAll('.opt')[chosen].classList.add('selected');
+      stage.querySelectorAll(`.opt`)[chosen].classList.add('selected');
     }
 
     backBtn.disabled = i === 0;
     nextBtn.textContent = i === QUIZ.length - 1 ? 'Finish' : 'Next';
     nextBtn.disabled = answers[i] === null;
-    hintText.textContent = answers[i] === null ? 'Pick one option to continue.' : 'Looks good — continue.';
-    updateProgress();
   }
 
   function selectOption(questionIndex, choiceIndex){
@@ -284,7 +319,6 @@
     stage.querySelectorAll('.opt').forEach(opt => opt.classList.remove('selected'));
     stage.querySelectorAll('.opt')[choiceIndex].classList.add('selected');
     nextBtn.disabled = false;
-    hintText.textContent = 'Looks good — continue.';
   }
 
   function updateProgress(){
@@ -304,22 +338,37 @@
     currentStage = 'result';
     stage.classList.remove('active');
     nav.classList.remove('active');
+    
     setTimeout(() => {
       stage.style.display = 'none';
       nav.style.display = 'none';
       result.style.display = 'block';
       setTimeout(() => result.classList.add('active'), 50);
+
+      const score = computeScore();
+      
+      // Animate score and skill meter
+      let currentScore = 0;
+      const interval = setInterval(() => {
+        if (currentScore >= score) {
+          clearInterval(interval);
+          finalScore.textContent = score;
+        } else {
+          currentScore++;
+          finalScore.textContent = currentScore;
+        }
+      }, 20);
+      
+      skillMeterFill.style.height = `${score}%`;
+
+      let badgeClass = 'bad', badgeText = 'Needs Upskilling', msg = 'Let’s build core skills first. We can help you get job-ready.';
+      if (score >= 80){ badgeClass = 'good'; badgeText = 'Hire-Ready'; msg = 'Strong profile! Keep shipping projects and apply with confidence.'; }
+      else if (score >= 60){ badgeClass = 'mid'; badgeText = 'Getting There'; msg = 'Solid base. A focused push with projects will get you across the line.'; }
+
+      tier.innerHTML = `<span class="badge ${badgeClass}">${badgeText}</span>`;
+      summary.textContent = msg;
     }, 300);
-
-    const score = computeScore();
-    finalScore.textContent = `${score} / 100`;
-
-    let badgeClass = 'bad', badgeText = 'Needs Upskilling', msg = 'Let’s build core skills first — we’ll help you get job-ready.';
-    if (score >= 80){ badgeClass = 'good'; badgeText = 'Hire-Ready'; msg = 'Strong profile. Keep shipping projects and apply with confidence!'; }
-    else if (score >= 60){ badgeClass = 'mid'; badgeText = 'Getting There'; msg = 'Solid base. A focused push with projects will get you across the line.'; }
-
-    tier.innerHTML = `<span class="badge ${badgeClass}">${badgeText}</span>`;
-    summary.textContent = msg;
+    
     updateProgress();
   }
 
@@ -342,6 +391,7 @@
     setTimeout(() => {
       promotion.style.display = 'none';
       result.style.display = 'none';
+      skillMeterFill.style.height = '0%'; // Reset skill meter
       stage.style.display = 'grid';
       nav.style.display = 'flex';
       renderQuestion(idx);
@@ -353,10 +403,7 @@
     if (idx > 0){
       stage.classList.remove('active');
       nav.classList.remove('active');
-      setTimeout(() => {
-        idx--;
-        renderQuestion(idx);
-      }, 300);
+      setTimeout(() => { idx--; renderQuestion(idx); }, 300);
     }
   });
 
@@ -365,12 +412,8 @@
     stage.classList.remove('active');
     nav.classList.remove('active');
     setTimeout(() => {
-      if (idx < QUIZ.length - 1){
-        idx++;
-        renderQuestion(idx);
-      } else {
-        showResult();
-      }
+      if (idx < QUIZ.length - 1){ idx++; renderQuestion(idx); }
+      else { showResult(); }
     }, 300);
   });
 
